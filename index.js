@@ -17,11 +17,11 @@ con.connect(function(error){
     console.log("connected");
 })
 */
-//initializing express
-const express = require('express');
-const app = express();
 //initialising mysql in our app
 var mysql = require('mysql');
+
+
+
 var con = mysql.createConnection({
 
 host :"localhost",
@@ -31,12 +31,37 @@ database:"node"
 });
 con.connect(function(error){
     if(error) throw error;
+    //choose any query how to insert update delete put any thing
+    // inserting data using query and daa result with the use of call back function
     con.query("INSERT INTO `user`(`id`, `username`, `email`, `password`) VALUES ('','oshogaur','osho@ak','1458')",function(err,result){
         if(err) throw err;
         console.warn("data inserted",result)
     })
 
 })
+//initializing express
+const express = require('express');
+const app = express();
+
+var bodyParser = require('body-parser');
+
+app.use(bodyParser.json()); 
+//router.use(bodyParser.urlencoded({extended: true})); 
+
+// get method for fetch all products. 
+app.get('/gett', function(req, res, next) {
+  var sql = "SELECT * FROM user ";
+  con.query(sql, function(err, rows, fields) {
+    if (err) {
+        res.send('something went wrong');
+     // res.status(500).send({ error: 'Something failed!' })
+    }
+    res.json(rows)
+  })
+});
+
+
+
 
 
 //now ia m goint to make another program for inserting data in database
