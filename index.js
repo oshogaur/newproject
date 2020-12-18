@@ -2,10 +2,9 @@
 
 
 //this is an example to check that our database in connected with our app or not
-/*var mysql = require('mysql');
+var mysql = require('mysql');
 const { rootCertificates } = require('tls');
 var con = mysql.createConnection({
-
 host :"localhost",
 user:"root",
 password:"",
@@ -16,9 +15,9 @@ con.connect(function(error){
     if(error) throw error;
     console.log("connected");
 })
-*/
+
 //initialising mysql in our app
-var mysql = require('mysql');
+/*var mysql = require('mysql');
 
 
 
@@ -35,18 +34,18 @@ con.connect(function(error){
     // inserting data using query and daa result with the use of call back function
     con.query("INSERT INTO `user`(`id`, `username`, `email`, `password`) VALUES ('','oshogaur','osho@ak','1458')",function(err,result){
         if(err) throw err;
-        console.warn("data inserted",result)
-    })
+        console.warn("not connect",result)
+    })*/
 
-})
+
 //initializing express
 const express = require('express');
 const app = express();
 
 var bodyParser = require('body-parser');
-
+app.set('view engine','pug');
 app.use(bodyParser.json()); 
-//router.use(bodyParser.urlencoded({extended: true})); 
+app.use(bodyParser.urlencoded({extended: false})); 
 
 // get method for fetch all products. 
 app.get('/gett', function(req, res, next) {
@@ -68,6 +67,7 @@ app.get('/gett', function(req, res, next) {
        
 //including that courses file in our page
 const courses = require('./courses');
+const { request } = require('express');
 //use function is used to include that function in our page
 app.use('/courses',courses);
 
@@ -115,13 +115,27 @@ app.get('/home',function(req,res){
 
 res.sendFile(__dirname+"/home.html");
 });
+
+
 //here we make one form from which we GET informations
 app.get('/login',function(req,res){
-    console.log(req.query);
-    res.sendFile(__dirname+"/login.html");
-   
+    console.log(req.query)
+    res.sendFile('login.html',{root:__dirname});
     });
-// this is a variable and listen is function which makes our port number
 
-app.listen(3000);
+    // when form get hit from /login route it comes here and then form is sending information to our database in user table
+    app.post('/submit',function(req,res){
+        //this console.body give the body in null so that we can execute in our query
+           console.log(req.body);
+           //making insert query and that res.body.name is the name of the body we pass and that body we get from console.log
+         con.query("INSERT INTO `user`(`username`, `email`, `password`) VALUES ('"+ req.body.name +"','"+ req.body.email +"','"+ req.body.password+"')",function(err,result){
+            if (err) throw err       
+            // res.sendFile('details.html',{root:__dirname});
+            //res.render('details',{title:'Data saved',message:'saved sucessfully'})
+              res.send('data inserted sucessfully');
+             }); 
+             con.end();
+            });
+        app.listen(3000); 
+// this is a variable and listen is function which makes our port number
 
